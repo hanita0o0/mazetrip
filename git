@@ -1,0 +1,89 @@
+[33mcommit d12a2062fdc38b131725dfa65602539b4d5b0b5f[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Wed Jan 10 12:37:58 2018 -0800
+
+    photo handle in chat done
+
+[33mcommit 95f399b6464f74555ab98454170623c1396f54ed[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Wed Jan 10 12:36:24 2018 -0800
+
+    photo handle in chat part is done and debug
+
+[33mcommit 8258110100f1a3802511dc26acdc2938c5e7270b[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Wed Jan 10 09:29:45 2018 -0800
+
+    test
+
+[33mcommit a04cc4088520c81663437cdf07d04bdfb54e3524[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Fri Dec 29 12:44:58 2017 -0800
+
+    working on private chat but not done
+
+[33mcommit 1739c39838679b0893145e4edf5d0d146659440d[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Sat Dec 23 14:23:13 2017 -0800
+
+    send message worket fine and checked all parts
+
+[33mcommit 7adeb2960c7f6872e85626cc5c3c27d93593b3b9[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Thu Dec 21 17:15:47 2017 -0800
+
+    still working on chats
+    have to complete sending message in chatrooms and private messages
+
+[33mcommit 86d2a621e83dddc0fa7536a9fdf3da4c4a58de1a[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Fri Nov 24 13:38:53 2017 -0800
+
+    bug fixed and some mirror changes to request for events
+
+[33mcommit 82c05dc63a666b3051c8d706173bbce6c39dfc34[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Thu Nov 23 17:39:55 2017 -0800
+
+    added request handeling to events have to do it for users too
+
+[33mcommit 91075d2923e57dfb63ca0639649c9d2d1ab4c438[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Tue Nov 14 15:45:42 2017 -0800
+
+    search function base on city and state and type ended
+    middle of ApiEventController
+
+[33mcommit 9184245133537c1ab6da892ac74c1ac018bfa2ea[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Sun Nov 12 15:09:34 2017 -0800
+
+    finishing global information for users
+    going to event page
+    not auth yet
+
+[33mcommit 61992a7a6b5ef128729fe8e3c410c4c250b2a636[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Tue Oct 31 15:13:49 2017 -0700
+
+    events part is complete and ready \
+    post part is complete and ready \
+    admin panel is ready and running
+
+[33mcommit b067d4d99bbab6613ca829b7711ddc8da101f831[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Mon Sep 18 18:08:39 2017 -0700
+
+    type part ended
+
+[33mcommit 55c861afc0b82abd5fa710992a565ba59d56887e[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Sun Sep 17 16:14:20 2017 -0700
+
+    users backend ended and | admin template added
+
+[33mcommit cdcd1c4b4c53854121f45bace01de35bd83cf85b[m
+Author: hossein <colonel.hossein@gmail.com>
+Date:   Fri Sep 15 13:34:11 2017 -0700
+
+    freamework is updated and going to compltete user part
