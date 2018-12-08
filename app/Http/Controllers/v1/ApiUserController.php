@@ -20,6 +20,8 @@ class ApiUserController extends Controller
     public function __construct(UserService $service)
     {
         $this->users =$service;
+        $this->middleware('auth:api')->except(['index','login',
+            'createUser','searchUser','resetPasswordRequest','resetPassword','sendMail']);
 
     }
 
@@ -174,13 +176,13 @@ class ApiUserController extends Controller
         return response()->json($data);
 
     }
-    //..edit profile
-    public function editSelfProfile(Request $request){
-        $user=Auth::user();
-        $user->update($request->all());
-        return response()->json($user,200);
-
-    }
+//    //..edit profile
+//    public function editSelfProfile(Request $request){
+//        $user=Auth::user();
+//        $user->update($request->all());
+//        return response()->json($user,200);
+//
+//    }
 
     /**
      * Show the form for editing the specified resource.
@@ -200,44 +202,86 @@ class ApiUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request , $ac_number)
+    public function update(Request $request , $id)
     {
-        $respond= array();
-        if ($user = User::where('activation_no',$ac_number)->first()){
-            if ($request->file('avatar')){
-                $avatar = $this->users->updateAvatar($request, $user->id);
-                $respond = [
-                    'avatar'=> $avatar,
-                ];
-            }
-            if (filter_var($request->email, FILTER_VALIDATE_EMAIL)){
-                $email = $this->users->UpdateEmail($request->email , $user);
-
-                $respond['email'] = $email;
-            }
-            if ($request->username){
-                $user_result = $this->users->UpdateUserName($request->username , $user);
-                $respond['username'] = $user_result;
-            }
-            if ($request->password){
-                $pass_resul = $this->users->UpdatePassword($request->newpassword ,$request->oldpassword , $user);
-
-                $respond['password'] = $pass_resul;
-            }
-            if ($request->city){
-                $city_update = $this->users->UpdateCity($request->city , $user);
-
-                $respond['city'] = $city_update;
-            }
-            if ($request->state){
-                $state_update = $this->users->UpdateState($request->state , $user);
-
-                $respond['state'] = $state_update;
-
-            }
-
-            return response()->json($respond);
+        $api_token=null;
+        if (\request()->input('api_token')){
+            $api_token = \request()->input('api_token');
         }
+        $respond= array();
+        if (empty($user = User::where('id',$id)->first())){
+            return response()->json('no user');
+        }else {
+            $user = User::where('id', $id)->first();
+            if ($user->api_token==$api_token) {
+
+
+                if ($request->file('avatar')) {
+                    $avatar = $this->users->updateAvatar($request, $user->id);
+                    $respond = [
+                        'avatar' => $avatar,
+                    ];
+                }
+                if (filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+                    $emailInputs = new Request;
+                    $emailInputs->email = $request->email;
+                    $emailInputs->oldpassword = $request->oldpassword;
+
+                    $email = $this->users->UpdateEmail($emailInputs, $user);
+
+                    $respond['email'] = $email;
+                }
+
+                if ($request->username) {
+                    $user_result = $this->users->UpdateUserName($request->username, $user);
+                    $respond['username'] = $user_result;
+                }
+                if ($request->newpassword) {
+                    $pass_resul = $this->users->UpdatePassword($request->newpassword, $request->oldpassword, $user);
+
+                    $respond['password'] = $pass_resul;
+                }
+                if ($request->city) {
+                    $city_update = $this->users->UpdateCity($request->city, $user);
+
+                    $respond['city'] = $city_update;
+                }
+                if ($request->state) {
+                    $state_update = $this->users->UpdateState($request->state, $user);
+
+                    $respond['state'] = $state_update;
+
+                }
+                if ($request->gender) {
+                    $gender_update = $this->users->UpdateGender($request->gender, $user);
+
+                    $respond['gender'] = $gender_update;
+
+                }
+                if ($request->bio) {
+                    $bio_update = $this->users->UpdateBio($request->bio, $user);
+
+                    $respond['bio'] = $bio_update;
+
+                }
+                if ($request->name_header) {
+                    $name_update = $this->users->UpdateNameHeader($request->name_header, $user);
+
+                    $respond['name_header'] = $name_update;
+
+                }
+                if ($request->phone) {
+                    $phone_update = $this->users->UpdatePhone($request->phone, $user);
+
+                    $respond['phone'] = $phone_update;
+
+                }
+
+                return response()->json($respond);
+                //return 1;
+            }
+        }
+        return "noaccess";
 
     }
 

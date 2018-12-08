@@ -8,8 +8,10 @@ class Eventphotos extends Model
 {
     //
     protected $fillable=[
-        'path','text','event_id'
+        'path'
     ];
-
+    public function avatarImage(){
+        return $this->hasOne('App\Event','avatar');
+    }
 
 }

@@ -66,7 +66,7 @@ class Event extends Model
     }
 
     public function avatarImage(){
-        return $this->belongsTo('App\EventPhotos','avatar');
+        return $this->belongsTo('App\Eventphotos','avatar');
     }
 
     public function checkList(){

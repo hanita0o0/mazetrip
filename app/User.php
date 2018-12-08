@@ -46,7 +46,7 @@ class User extends Authenticatable
     }
 
     public function city(){
-        return $this->belongsTo('App\city');
+        return $this->belongsTo('App\City');
     }
    public function roles(){
         return $this->belongsToMany('App\Role');
@@ -109,9 +109,9 @@ class User extends Authenticatable
     $this->attributes['password'] = Hash::make($value);
     }
 
-   //public function getPasswordAttribute($value){
-    //  return decrypt($value);
-   // }
+//   public function getPasswordAttribute($value){
+//      return decrypt($value);
+//    }
 
 
 }

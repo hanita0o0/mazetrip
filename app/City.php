@@ -15,4 +15,7 @@ class City extends Model
     public function events(){
         return $this->hasMany('App\Event','city');
     }
+    public function users(){
+        return $this->hasMany('App\User','city_id');
+    }
 }

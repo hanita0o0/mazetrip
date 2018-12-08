@@ -8,7 +8,8 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-
+use App\Event;
+use Illuminate\Support\Facades\DB;
 class ApiEventController extends Controller
 {
     protected $events;
@@ -16,7 +17,7 @@ class ApiEventController extends Controller
     public function __construct(EventService $eventService)
     {
         $this->events = $eventService;
-        $this->middleware('auth:api',['except'=>['search']]);
+        $this->middleware('auth:api')->except(['activeTicket','singleEvent']);
     }
 
     /**
@@ -105,17 +106,19 @@ class ApiEventController extends Controller
 
     public function search()
     {
-//        return 's';
-        $data=null;
-        if (\request()->input('key')){
-//            return 'salam';
+       //return 'salam';
+     // $data=\request()->input('key');
+      //  return "salam";
+       if (\request()->input('key')){
+
             $inputs['city'] = \request()->input('key');
             $inputs['state'] = \request()->input('key');
             $inputs['type'] = \request()->input('key');
-//            return $inputs;
+           $inputs['club'] = \request()->input('key');
+         // return $inputs;
             $data = $this->events->search($inputs);
-        }
-        return response()->json($data);
+      }
+   return response()->json($data);
     }
 
     /**
@@ -146,11 +149,11 @@ class ApiEventController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return string
      */
     public function destroy($id)
     {
-        //
+
     }
 
     /**
@@ -177,6 +180,7 @@ class ApiEventController extends Controller
         return response()->json($data);
     }
 
+
     public function editEvent(Request $editsData,$ename){
         $data = $this->events->editEvent($ename , $editsData);
         return response()->json($data);
@@ -198,7 +202,7 @@ class ApiEventController extends Controller
     }
 
     public function updateTicket(Request $updateData,$tid){
-//        return 'hi';
+      //return 'hi';
         return response()->json($this->events->updateTicket($updateData , $tid));
     }
 
@@ -209,5 +213,33 @@ class ApiEventController extends Controller
     public function subscribe($ename){
         return response()->json($this->events->subscribe($ename));
     }
+    public function deleteEvent($id){
+        $data = $this->events->deleteEvent($id);
+        return $data;
+    }
+    public function deleteTicket($id){
+
+        $data=$this->events->deleteTicket($id);
+       return $data;
+
+    }
+    public function activeTicket(){
+
+        $activeSkip = 0;
+        $activeLimit = 5;
+
+        if (\request()->input()) {
+            if (\request()->input('activeSkip')) {
+                $activeSkip = \request()->input('activeSkip');
+            }
+            if (\request()->input('activeLimit')) {
+                $activeLimit = \request()->input('activeLimit');
+            }
+        }
+        $data=$this->events->activeTickets($activeSkip,$activeLimit);
+        return $data;
+
+    }
+
 
 }

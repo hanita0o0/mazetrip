@@ -45,5 +45,28 @@ class ApiPostController extends Controller
         return response()->json($data);
     }
 
+    /**
+     * @param Request $editsData
+     * @param $pid
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function editPost(Request $editsData, $pid){
+        $data = $this->post->editPost($pid,$editsData);
+        return response()->json($data);
+
+
+    }
+    public function showEditPost($pid){
+        $data = $this->post->showEditPost($pid);
+        return response()->json($data);
+
+
+    }
+    public function deleteComment($cid){
+        $data=$this->post->deleteComment($cid);
+        return $data;
+
+   }
+
 
 }

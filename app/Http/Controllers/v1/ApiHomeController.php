@@ -4,6 +4,8 @@ namespace App\Http\Controllers\v1;
 use App\User;
 use App\Type;
 use App\Event;
+use App\State;
+use App\City;
 use App\Services\v1\HomeService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -65,9 +67,26 @@ class ApiHomeController extends Controller
                 $clubSuggest=\Request()->input('clubSuggest');
             }
         }
-        $user=Auth::user();
-        $state=$user->state_id;
-        $city=$user->city_id;
+
+        if($request->state){
+
+            $stat = State::where('name', $request->state)->first();
+            if (!empty($stat)) {
+                $state=$stat->id;
+            }
+
+        }
+        if($request->city){
+
+            $cit = city::where('name', $request->city)->first();
+            if (empty($cit)) {
+                $cit = City::create(['name' => $cit, 'state_id' => $state]);
+                $city=$cit->id;
+            } else {
+                $city=$cit['id'];
+            }
+
+        }
         if($request->types) {
             $dd = $request->types;
             $clubs = $this->home->getClubs($dd, $state, $city, $clubSkip, $clubSuggest);

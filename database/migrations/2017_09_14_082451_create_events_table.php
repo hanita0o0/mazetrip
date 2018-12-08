@@ -15,7 +15,7 @@ class CreateEventsTable extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->nullable();
+            $table->string('name');
             $table->string('header')->nullable();
             $table->text('about')->nullable();
             $table->text('about_team')->nullable();
@@ -27,8 +27,8 @@ class CreateEventsTable extends Migration
 
             //this below (event-profile-image) is for the header image and has nothing to do with gallery
             //let it seprate
-            $table->integer('state')->nullable();
-            $table->integer('city')->nullable();
+            $table->integer('state');
+            $table->integer('city');
 
             $table->timestamps();
         });

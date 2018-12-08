@@ -17,15 +17,15 @@ class CreateUsersTable extends Migration
             Schema::defaultStringLength(191);
             $table->increments('id');
             $table->string('name')->unique();
-            $table->string('name_header',30)->nullable();
+            $table->string('name_header',30);
             $table->string('email')->unique();
             $table->string('password');
             $table->string('activation_no')->unique()->nullable();
-            $table->integer('state_id')->nullable();
-            $table->integer('city_id')->nullable();
+            $table->integer('state_id');
+            $table->integer('city_id');
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
-            $table->boolean('gender')->nullable();
+            $table->boolean('gender');
             $table->text('bio')->nullable();
           
             $table->integer('avatar_id')->nullable();

@@ -19,7 +19,7 @@ class Timeline extends Model
     }
 
     public function photo(){
-        return $this->belongsTo('App\Eventphotos','photo_id');
+        return $this->belongsTo('App\TimelinePhoto','photo_id');
     }
 
     public function morphable(){

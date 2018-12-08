@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Hash;
 use Image;
 use PhpParser\ErrorHandler\Collecting;
 use Snowfire\Beautymail\Beautymail;
+use App\EventPhotos;
 
 
 class UserService
@@ -126,12 +127,15 @@ class UserService
      */
     public function Create($request)
     {
+        $respond=[];
+        $avatar_id=null;
         $user = new User();
         if (!$request->username
             or !$request->email
             or !$request->password
             or !$request->state
             or !$request->city
+            or !$request->gender
 //            or !$request->address
 //            or !$request->state
 //            or !$request->city
@@ -155,12 +159,12 @@ class UserService
         $user->name_header = $request->name_header ? $request->name_header : null;
         $user->save();
         if ($request->file('avatar')) {
-            $this->updateAvatar($request, $user->id);
+           $avatar_id= $this->updateAvatar($request, $user->id);
         }
-        $respond=[];
+
         $respond['username']=$user->name;
 //        $respond['email']=$user->email;
-        $respond['avatar_id']=$user->avatar_id;
+        $respond['avatar'] = $avatar_id;
         $respond['api_token']=$user->api_token;
         $respond['reponse']=1;
         return $respond;
@@ -252,7 +256,7 @@ class UserService
     public function updateAvatar($request, $user_id)
     {
 
-        $user = User::finDorFail($user_id);
+        $user = User::findOrFail($user_id);
 
         if ($id = $user->avatar_id) {
             $photo = Photo::find($id);
@@ -284,28 +288,32 @@ class UserService
         $photo = Photo::create(['path' => $file_name]);
         $user->avatar_id = $photo->id;
         $user->save();
-        return 1;
+        return $user->avatar_id;
+
     }
 
 /////////////////////////////////Email UPDATE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-    public function UpdateEmail(Request $emailInputs)
+    public function UpdateEmail( $emailInputs,$user)
     {
-        $user = Auth::user();
+        //$user = Auth::user();
+
         if ($this->getExceptionsEmail($emailInputs->email) == 1) {
-            if (!$emailInputs->password) {
+
+            if (!$emailInputs->oldpassword) {
                 return 'please enter password';
             }
 
-            if ($user->password != $emailInputs->password or $user != $emailInputs->password2) {
+            if (!( Hash::check($emailInputs->oldpassword,$user->password))) {
                 return 'please enter correct password';
             }
             $user->email = $emailInputs->email;
             $user->save();
-            return 1;
-        }
-        return 0;
+      return 1;
+      }
+       return 0;
 
     }
+
 
 /////////////////////////////////UserName UPDATE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     public function UpdateUserName($username, $user)
@@ -321,7 +329,8 @@ class UserService
 /////////////////////////////////Password UPDATE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     public function UpdatePassword($newPassword, $oldPassword, $user)
     {
-        if ($user->password == $oldPassword) {
+       if( Hash::check( $oldPassword,$user->password ) ){;
+
             $user->password = $newPassword;
             if ($user->save()) {
                 return 1;
@@ -329,27 +338,75 @@ class UserService
         } else {
             return 0;
         }
+
     }
 
 /////////////////////////////////City and State UPDATE \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     public function UpdateCity($city, $user)
     {
-        $user->city_id = $city;
-        if ($user->save()) {
-            return 1;
-        } else {
-            return 0;
+        if(!($user->city_id == $city)) {
+            $user->city_id = $city;
+            if ($user->save()) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
+        return 0;
     }
 
     public function UpdateState($state, $user)
     {
-        $user->state_id = $state;
-        if ($user->save()) {
-            return 1;
-        } else {
-            return 0;
-        }
+        if(!($user->state_id == $state)) {
+            $user->state_id = $state;
+            if ($user->save()) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }return 0;
+    }
+ public function UpdateGender($gender, $user)
+ {
+     if(!($user->gender ==$gender)) {
+         $user->gender =$gender;
+         if ($user->save()) {
+             return 1;
+         } else {
+             return 0;
+         }
+     }return 0;
+
+ }
+ public function UpdateBio($bio,$user){
+     if(!($user->bio ==$bio)) {
+         $user->bio =$bio;
+         if ($user->save()) {
+             return 1;
+         } else {
+             return 0;
+         }
+     }return 0;
+ }
+ public function UpdateNameHeader($name_header,$user){
+     if(!($user->name_header ==$name_header)) {
+         $user->name_header =$name_header;
+         if ($user->save()) {
+             return 1;
+         } else {
+             return 0;
+         }
+     }return 0;
+ }
+    public function UpdatePhone($phone,$user){
+        if(!($user->phone ==$phone)) {
+            $user->phone =$phone;
+            if ($user->save()) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }return 0;
     }
 
     ///////////////////////////////// Login \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -647,12 +704,16 @@ class UserService
        public function selfProfileShowEdit(){
 
                $user = Auth::user();
+              $data['id']= $user->id;
+              $data['username']= $user->name;
+              $data['name_header']= $user->name_header;
               $data['email']= $user->email;
               $data['gender']=$user->gender;
               $data['phone']=$user->phone;
               $data['bio']=$user->bio;
-              $data['cover']=$user->avatar ?$user->avatar->path : null;
-              $data['password']=$user->password;
+              $data['avatar']=$user->avatar ?$user->avatar->path : null;
+              $data['state']=['id'=>$user->state_id,'name'=>$user->state->name];
+              $data['city']=['id'=>$user->city_id,'name'=>$user->city->name];
               return $data;
 
        }
@@ -790,7 +851,7 @@ class UserService
         $event = [
             'club_name'=>$event->name,
             'type'=>$event->type_id ? $event->type->name : null,
-            'cover'=>$event->avatar ? $event->avatarImage->path : null,
+            'cover'=>$event->avatar ? $this->getImageFoldersName(null,$event->avatarImage->created_at).$event->avatarImage->path : null,
             'state'=>$event->state ? $event->State->name : null,
             'city'=>$event->city ? $event->City->name :null,
 

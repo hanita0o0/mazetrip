@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use function GuzzleHttp\Psr7\build_query;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use phpDocumentor\Reflection\Types\Null_;
 
 class HomeService
 {
@@ -33,15 +34,21 @@ class HomeService
     public function Home($userPostLimits=20 , $userPostSkips=0 , $clubsPostLimits=20 , $clubPostSkips=0){
 
         $user = Auth::user();
-        $clubs = $user->events;
+        $clubs = $user->events; // list of clubs subscribes by user
+       // $clubId=$user->events->id;
+        $club_id=$clubs->pluck('id')->toArray();
         if (empty($clubs)){
             return 0;
         }
-        $clubPosts = Post::where('event_id',$clubs->pluck('id'))->skip((int)$clubPostSkips)->take((int)$clubsPostLimits)->get();
-        $data['user_posts'] = $this->getUserPosts((int)$userPostLimits,(int)$userPostSkips);
-        $data['club_posts'] = $this->postData($clubPosts);
+        $clubPosts = Post::whereIn('event_id',$club_id)->skip((int)$clubPostSkips)->take((int)$clubsPostLimits)->latest('updated_at')->get();
+        // return $clubPosts;
+
+        $data['user_posts'] =$this->getUserPosts((int)$userPostLimits,(int)$userPostSkips);
+       $data['club_posts'] =$this->postData($clubPosts);
+
 //        $tickets = Ticket::where('event_id',$clubs->pluck('id'))->whereDate('date','>',date('Y-m-d'))->skip($ticketSkip)->take($ticketLimits)->get();
 //        $data['tickets']  = $this->ticketData($tickets);
+        //$data=$clubPosts;
         return $data;
     }
 
@@ -68,14 +75,20 @@ class HomeService
             $skipPosts = 0;
         }
         $user = Auth::user();
-        $followings = $user->following;
+        $selfId=$user->id;
+        $followings = $user->followers;
         if (empty($followings->first())){
             return null;
-        }
-        //todo:: have to add last activity to user table to check his followings posts
-        $posts = Post::where(['user_id'=>$followings->pluck('id') ,'event_id'=>NULL ])->skip($skipPosts)->take($limitPosts)->get();
-        $data = $this->postData($posts);
+        }else {
+            //todo:: have to add last activity to user table to check his followings posts
+            $userId = $followings->pluck('id')->toArray();
+            array_push($userId,$selfId);
+            //return $userId;
+            $pp = Post::whereIn('user_id', $userId)->skip((int)$skipPosts)->take((int)$limitPosts)->latest('updated_at')->get();
+           $posts=$pp->where('event_id','===',null)->orderBy('updated_at', 'DESC')->all();
+            return $this->postData($posts);
 
+        }
 
 //        $clubs = $user->events;
 //        $clubPosts = Post::where('event_id',$clubs->pluck('id'))->skip($skipPostsClubs)->take($limitPostsClubs)->get();
@@ -88,27 +101,26 @@ class HomeService
 //        $data['tickets']  = $this->ticketData($tickets);
 
 
-        return $data;
+        // return $data;
     }
+
 
 
 
 
     protected function postData($posts){
         $data = null;
-        $pidies = $posts->pluck('media_id');
-        $medias = Postmedia::find($pidies);
-//        return $posts;
 
         if (isset($posts[0])){
             foreach ($posts as $post) {
-                $writer = $post->user;
+
                 $data[] = [
                     'Pid' => $post->id,
                     'body' => $post->body,
-                    'media' => $medias->where('id', $post->media_id)->first() ? $medias->where('id', $post->media_id)->first()->name : null,
-                    'writer' => $writer->name,
-                    'writer_avatar' => $writer->avatar_id ? $writer->avatar->path : null,
+                    'media'=>$post->media_id?$this->getImageFoldersName(null,$post->photo->created_at).$post->photo->name:null,
+                    // 'media' => $medias->where('id', $post[]->media_id)->first() ? $this->getImageFoldersName(null,$post->photo->created_at).$medias->where('id', $post->media_id)->first()->name : null,
+                    'writer' => $post->user_id?$post->user->name:null,
+                    'writer_avatar' =>$post->user->avatar_id? $post->user->avatar->path:null,
                     'created_at' => $post->created_at,
                     'club_name' => $post->event_id ? $post->event->name : null,
                     'likes_count'=>count($post->likes) ,
@@ -119,6 +131,7 @@ class HomeService
             return $data;
         }
         return $data;
+
     }
 
     protected function ticketData($tickets){
@@ -207,10 +220,33 @@ class HomeService
        $respond=[];
        foreach($events as $event){
            $respond[]=['club_name'=>$event->name,
-              'club_image'=>$event->avatar
+              'club_image'=>$event->avatar?$this->getImageFoldersName(null,$event->avatarImage->created_at).$event->avatarImage->path:null
            ];
        }
 
        return($respond);
+    }
+    protected function getImageFoldersName($directory=null , $date="nothing"){
+
+        if ($date == "nothing"){
+            $date = Carbon::now();
+        }else{
+            $date = Carbon::parse($date);
+        }
+
+        if ($directory==null){
+            return ('/'.$date->year.'/'.$date->month.'/'.$date->day.'/');
+        }
+
+        if (!file_exists(storage_path($directory.'/'.$date->year))){
+            mkdir(storage_path($directory.'/'.$date->year));
+        }
+        if (!file_exists(storage_path($directory.'/'.$date->year.'/'.$date->month))){
+            mkdir(storage_path($directory.'/'.$date->year.'/'.$date->month));
+        }
+        if (!file_exists(storage_path($directory.'/'.$date->year.'/'.$date->month.'/'.$date->day))){
+            mkdir(storage_path($directory.'/'.$date->year.'/'.$date->month.'/'.$date->day));
+        }
+        return ($directory.'/'.$date->year.'/'.$date->month.'/'.$date->day.'/');
     }
 }

@@ -16,7 +16,7 @@ use Carbon\Carbon;
 use function GuzzleHttp\Psr7\str;
 use Illuminate\Support\Facades\Auth;
 use Image;
-use App\Comment;
+use App\comment;
 use App\Http\Sockets\MyClass;
 use WebSocket\Client;
 
@@ -195,7 +195,45 @@ class PostService
      *
      */
 
+    protected function updateMedia($input,$post)
+    {
+        if ($id = $post->media_id) {
+            $photo = Postmedia::find($id);
+            $file_name = $photo->name;
+            $path_original = storage_path('photos/posts/original/' . $this->getImageFoldersName(null, $photo->created_at) . $file_name);
+            $path_thumbnail = storage_path('photos/posts/thumbnail' . $this->getImageFoldersName(null, $photo->created_at) . $file_name);
+            $path_medium = storage_path('photos/posts/medium' . $this->getImageFoldersName(null, $photo->created_at) . $file_name);
 
+
+            unlink($path_thumbnail);
+            unlink($path_original);
+            unlink($path_medium);
+            $photo->delete();
+        }
+        if ($_FILES['media']) {
+            $file=$input->media;
+
+            $file_original = $_FILES['media'];
+            $video_formats = array('video/mp4', 'video/3gp');
+            $image_formats = array('image/png', 'image/jpg', 'image/jpeg');
+            $file_type = $file_original['type'];
+
+            if (in_array($file_type, $image_formats)) {
+                $file_name = time() . '.' . $file->getClientOriginalName();
+                $path_original = storage_path($this->getImageFoldersName('photos/posts/original/') . $file_name);
+                $path_thumbnail = storage_path($this->getImageFoldersName('photos/posts/thumbnail/') . $file_name);
+                $path_medium = storage_path($this->getImageFoldersName('photos/posts/medium/') . $file_name);
+                Image::make($file)->fit(150, 150)->save($path_thumbnail);
+                Image::make($file)->fit(300, 300)->save($path_medium);
+                Image::make($file)->save($path_original);
+                $photo = Postmedia::create(['name' => $file_name]);
+                return $photo->id;
+                //  return  $file_original;
+
+            }
+
+        }
+    }
     protected function mediaHandler($file){
         $file_original = $_FILES['media'];
         $video_formats = array('video/mp4' , 'video/3gp');
@@ -313,9 +351,9 @@ class PostService
         }
 
         if (in_array($media_format , $image_formats)){
-            $path_original = storage_path($this->getImageFoldersName('photos/posts/original/').$media_name);
-            $path_medium = storage_path($this->getImageFoldersName('photos/posts/medium/').$media_name);
-            $path_thumbnail = storage_path($this->getImageFoldersName('photos/posts/thumbnail/').$media_name);
+            $path_original = storage_path('photos/posts/original/'.$this->getImageFoldersName(null,$post->photo->created_at).$media_name);
+            $path_medium = storage_path('photos/posts/medium/'.$this->getImageFoldersName(null,$post->photo->created_at).$media_name);
+            $path_thumbnail = storage_path('photos/posts/thumbnail/'.$this->getImageFoldersName(null,$post->photo->created_at).$media_name);
             unlink($path_original);
             unlink($path_medium);
             unlink($path_thumbnail);
@@ -338,7 +376,70 @@ class PostService
         return true;
 
     }
+   public function editPost($pid,$editsData){
+       $post = Post::where('id', $pid)->first();
+       if (empty($post)) {
+           return "no post exist";
+       }
+       $user = Auth::user();
 
+       if (!($post->user_id == $user->id)) {
+           return 'no access';
+       }
+       if($editsData->body){
+        $post->body=$editsData->body;
+       }
+
+       if ($editsData->file('media')) {
+           $post->media_id = $this->updateMedia($editsData,$post);
+
+       }
+
+       if($post->save()){
+           return true;
+       }
+
+
+   }
+   public function showEditPost($pid){
+       $post = Post::where('id', $pid)->first();
+       if (empty($post)) {
+           return "no post exist";
+       }
+       $user = Auth::user();
+
+       if (!($post->user_id == $user->id)) {
+           return 'no access';
+       }
+       $media_path = null;
+       if ($post->media_id){
+           $media_path = $this->getImageFoldersName(null,$post->photo->created_at).$post->photo->name;
+       }
+       $data=[];
+       $data=[
+           'id'=>$post->id,
+           'body'=>$post->body,
+           'avatar'=>$media_path
+       ];
+       return $data;
+
+   }
+   public function deleteComment($cid){
+       $comment = comment::find($cid);
+       if (empty($comment)){
+           return 'no comment';
+       }
+       $user = Auth::user();
+
+       if ($comment->user_id != $user->id){
+           return 'no access';
+       }
+//
+       $comment->delete();
+       return "Comment Deleted";
+
+
+   }
 
     protected function getImageFoldersName($directory=null , $date="nothing"){
 

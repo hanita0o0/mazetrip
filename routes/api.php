@@ -47,9 +47,12 @@ route::resource('/v1/user',v1\ApiUserController::class);
 
 route::post('/v1/post/create','v1\ApiPostController@createPost')->middleware('auth:api');
 route::post('/v1/post/comment/{pid}','v1\ApiPostController@commentPost')->middleware('auth:api');
+route::get('/v1/post/comment/delete/{cid}','v1\ApiPostController@deleteComment')->middleware('auth:api');
 route::get('/v1/post/{pid}','v1\ApiPostController@showPost')->middleware('auth:api');
 route::get('/v1/post/delete/{pid}','v1\ApiPostController@deletePost')->middleware('auth:api');
 route::get('/v1/post/like/{pid}','v1\ApiPostController@likePost')->middleware('auth:api');
+route::post('/v1/post/edit/{pid}','v1\ApiPostController@editPost')->middleware('auth:api');
+route::get('/v1/post/showedit/{pid}','v1\ApiPostController@showEditPost')->middleware('auth:api');
 
 
 route::get('/v1/event/follow','v1\ApiEventController@follow')->middleware('auth:api');
@@ -65,7 +68,12 @@ route::get('/v1/event/{ename}','v1\ApiEventController@singleEvent');
 route::get('/v1/event/{ename}/followers','v1\ApiEventController@showEventFollowers')->middleware('auth:api');
 route::get('/v1/event/{ename}/subscribe','v1\ApiEventController@subscribe')->middleware('auth:api');
 route::post('/v1/event/edit/{ename}','v1\ApiEventController@editEvent')->middleware('auth:api');
-route::get('/v1/search','v1\ApiEventController@search')->middleware('guest');
+route::get('/v1/search','v1\ApiEventController@search')->middleware('auth:api');
+route::get('/v1/event/delete/{eid}','v1\ApiEventController@deleteEvent')->middleware('auth:api');
+route::get('/v1/event/deleteticket/{tid}','v1\ApiEventController@deleteTicket')->middleware('auth:api');
+route::get('/v1/ticketActive','v1\ApiEventController@activeTicket');
+
+
 route::resource('/v1/event',v1\ApiEventController::class);
 
 
@@ -92,7 +100,7 @@ route::resource('/v1/chat',v1\ApiChatController::class);
 
 
 route::get('v1/home','v1\ApiHomeController@hello')->middleware('auth:api');
-route::post('v1/suggestion','v1\ApiHomeController@suggest')->middleware('auth:api');
+route::post('v1/suggestion','v1\ApiHomeController@suggest');
 route::get('v1/types','v1\ApiHomeController@showTypes');
 route::get('v1/types','v1\ApiHomeController@showTypes');
 
