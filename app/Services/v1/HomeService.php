@@ -213,7 +213,7 @@ class HomeService
         return $respond;
     }
     public function getClubs($dd,$state,$city,$clubSkip,$clubSuggest){
-        $type=explode(',',$dd);
+        $type=explode('-',$dd);
         $suggestion =DB::table('event_type')->whereIn('Type_id',$type)->get();
        $event=Event::find($suggestion->pluck('event_id'));
        $events=$event->where('state',$state)->Where('city',$city)->slice((int)$clubSkip)->take((int)$clubSuggest)->all();

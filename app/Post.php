@@ -17,7 +17,7 @@ class Post extends Model
 {
     //
     protected $fillable = [
-        'body','user_id','event_id','media_id'
+        'body','user_id','event_id','media_id','location_id'
     ];
 
     public  function photo(){
@@ -37,5 +37,8 @@ class Post extends Model
     }
     public function comments(){
         return $this->hasMany('App\comment');
+    }
+    public function locate(){
+        return $this->belongsTo('App\Gmap','location_id');
     }
 }

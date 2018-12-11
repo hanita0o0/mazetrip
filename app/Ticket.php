@@ -8,7 +8,7 @@ class Ticket extends Model
 {
     //
     protected $fillable = [
-       'name','date','body','event_id','filter_id','activation_num','filter_id','price','state','city','address','avatar_id','end_date','is_active'
+       'name','date','body','event_id','filter_id','activation_num','filter_id','price','state','city','address','avatar_id','end_date','is_active','location_id'
     ];
 
     /*
@@ -45,6 +45,9 @@ class Ticket extends Model
 
     public function avatar(){
         return $this->belongsTo('App\Ticketavatar','avatar_id');
+    }
+    public function locate(){
+        return $this->belongsTo('App\Gmap','location_id');
     }
 
 }

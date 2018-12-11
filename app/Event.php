@@ -9,7 +9,7 @@ class Event extends Model
 
 
     protected $fillable = [
-        'name','header','about', 'about_team' , 'is_active' , 'type_id' , 'avatar' , 'state' , 'city','activation_no'
+        'name','header','about', 'about_team' , 'is_active' , 'type_id' , 'avatar' , 'state' , 'city','activation_no','location_id'
     ];
 
     public function save(array $options = [])
@@ -83,6 +83,9 @@ class Event extends Model
     }
     public function gangs(){
         return $this->belongsToMany('App\Gang');
+    }
+    public function locate(){
+        return $this->belongsTo('App\Gmap','location_id');
     }
 
 }
