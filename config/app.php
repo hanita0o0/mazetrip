@@ -187,7 +187,7 @@ return [
         App\Providers\v1\EventServiceProvider::class,
         App\Providers\v1\ChatServiceProvider::class,
         App\Providers\v1\HomeServiceProvider::class,
-
+        App\Providers\v2\HomeServiceProvider::class,
         //
         Snowfire\Beautymail\BeautymailServiceProvider::class,
 

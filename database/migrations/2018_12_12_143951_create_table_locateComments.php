@@ -4,31 +4,32 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateGMapsGeoCacheTable extends Migration
+class CreateTableLocateComments extends Migration
 {
     /**
-     * Run the migrations.
+     * Run the migrations.php
      *
      * @return void
      */
     public function up()
     {
-        Schema::create('gmaps_geocache', function (Blueprint $table) {
+        Schema::create('locateComments', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('address');
-            $table->string('latitude');
-            $table->string('longitude');
+            $table->string('body');
+            $table->string('author');
+            $table->integer('star')->length(5)->nullable();
+            $table->integer('location_id');
             $table->timestamps();
         });
     }
 
-    /**
+    /**a
      * Reverse the migrations.
      *
      * @return void
      */
     public function down()
     {
-        Schema::drop('gmaps_geocache');
+        Schema::dropIfExists('locateComments');
     }
 }

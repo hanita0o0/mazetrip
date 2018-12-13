@@ -38,7 +38,5 @@ class Post extends Model
     public function comments(){
         return $this->hasMany('App\comment');
     }
-    public function locate(){
-        return $this->belongsTo('App\Gmap','location_id');
-    }
+
 }

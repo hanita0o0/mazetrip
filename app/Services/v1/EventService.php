@@ -33,8 +33,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\comment;
 use App\Gang;
-use GMaps;
-use App\Gmap;
+
 
 class EventService
 {
@@ -739,7 +738,6 @@ class EventService
             'is_active' => 1,
             'activation_num' => uniqid(),
             'avatar_id' => $this->handleTicketAvatar($ticketData),
-            'location_id'=> ($ticketData->lat and $ticketData->long and $ticketData->locateAddress)?$this->setLocation($ticketData->lat,$ticketData->long,$ticketData->locateAddress): 0
         ];
 
         if ($ticketData->filter) {
@@ -1980,8 +1978,7 @@ class EventService
      * @return array
      */
     public function activeTickets($activeSkip=0 , $activeLimit=5 ){
-        $config['geocodeCaching']=true;
-        GMaps::initialize($config);
+
       $data=[];
         $activeTicket=Ticket::whereDate('date', '>', Carbon::today()->toDateString())->where('is_active',1)->skip((int)$activeSkip)->take((int)$activeLimit)->latest('updated_at')->get();
       foreach($activeTicket as $item){
@@ -1991,23 +1988,11 @@ class EventService
                     'club'=>$item->event_id?$item->event->name :null,
                     'startDate'=>$item->date,
                     'endDate'=>$item->end_date,
-                    'latitude'=>$item->location_id?$item->locate->latitude: null,
-                    'longitude'=>$item->location_id?$item->locate->longitude:null
+
 
               ];
       }
         return $data;
-    }
-    public function setLocation($lat,$long,$address)
-    {
-        $locate=Gmap::where('latitude',$lat)->where('longitude',$long)->first();
-       if(empty($locate)){
-           $location= Gmap::create(['address' => $address, 'latitude' => $lat,'longitude'=>$long]);
-           return $location->id;
-       }  else {
-       return $locate->id;
-       }
-
     }
 
 }

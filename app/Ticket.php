@@ -46,8 +46,5 @@ class Ticket extends Model
     public function avatar(){
         return $this->belongsTo('App\Ticketavatar','avatar_id');
     }
-    public function locate(){
-        return $this->belongsTo('App\Gmap','location_id');
-    }
 
 }

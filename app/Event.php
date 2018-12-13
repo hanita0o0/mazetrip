@@ -84,8 +84,6 @@ class Event extends Model
     public function gangs(){
         return $this->belongsToMany('App\Gang');
     }
-    public function locate(){
-        return $this->belongsTo('App\Gmap','location_id');
-    }
+
 
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Providers\v1;
+namespace App\Providers\v2;
 
-use App\Services\v1\HomeService;
 use Illuminate\Support\ServiceProvider;
+use App\Services\v2\HomeService2;
 
 class HomeServiceProvider extends ServiceProvider
 {
@@ -24,9 +24,9 @@ class HomeServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(HomeService::class, function($app){
-            return new HomeService();
+        //
+        $this->app->bind(HomeService2::class, function($app){
+            return new HomeService2();
         });
-
     }
 }

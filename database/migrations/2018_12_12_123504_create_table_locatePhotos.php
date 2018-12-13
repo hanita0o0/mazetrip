@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddLocationIdToTicketsTable extends Migration
+class CreateTableLocatePhotos extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,11 @@ class AddLocationIdToTicketsTable extends Migration
      */
     public function up()
     {
-        Schema::table('tickets', function (Blueprint $table) {
-            $table->integer('location_id')->nullable();
+        Schema::create('locatePhotos', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('path');
+            $table->integer('location_id');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +28,6 @@ class AddLocationIdToTicketsTable extends Migration
      */
     public function down()
     {
-        Schema::table('tickets', function (Blueprint $table) {
-            $table->dropcolumn('location_id');
-        });
+        Schema::dropIfExists('locatePhotos');
     }
 }

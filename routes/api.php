@@ -103,5 +103,9 @@ route::get('v1/home','v1\ApiHomeController@hello')->middleware('auth:api');
 route::post('v1/suggestion','v1\ApiHomeController@suggest');
 route::get('v1/types','v1\ApiHomeController@showTypes');
 route::get('v1/types','v1\ApiHomeController@showTypes');
-
+route::post('v2/home/addLocation','v2\ApiHomeController@addLocation');
+route::post('v2/home/searchLocationMap','v2\ApiHomeController@searchLocationMap');
+route::post('v2/home/searchLocationName','v2\ApiHomeController@searchLocationName');
+route::get('v2/home/showLocation/{LId}','v2\ApiHomeController@showLocation');
+route::post('v2/home/addCommentLocation/{LId}','v2\ApiHomeController@addCommentLocation');
 //route::resource('/v1/chat/dmsend',v1\::class);
