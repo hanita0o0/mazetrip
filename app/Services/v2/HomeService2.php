@@ -11,6 +11,9 @@ class HomeService2 extends  HomeService
 {
  public function addLocation($data)
  {
+
+  //return $_FILES['photo'];
+//     return $data->file('photo');
   $locate=new Location();
   $locate->location=$data->location;
   $locate->about=$data->about;
@@ -19,22 +22,22 @@ class HomeService2 extends  HomeService
   $locate->longitude=$data->longitude;
   $locate->address=$data->address;
   if($locate->save()) {
-     $this->photoHandle($data, $locate->id);
+     $this->photoHandle( $locate->id);
      }
   return "create location";
-
  }
-    protected function photoHandle($input,$id)
+    protected function photoHandle($id)
     {
-        if ($file = $input->file('photo')) {
-            $file_name = time() . '.' . $file->getClientOriginalName();
+        for($i=0;count($_FILES['photo']['name'])>$i;$i++) {
+            $file_name = time() . '.' . $_FILES['photo']['name'][$i];
+
             $path_original = storage_path($this->getImageFoldersName('photos/locations/original/') . $file_name);
             $path_thumbnail = storage_path($this->getImageFoldersName('photos/locations/thumbnail/') . $file_name);
             $path_medium = storage_path($this->getImageFoldersName('photos/locations//medium/') . $file_name);
-            Image::make($file)->fit(150)->save($path_thumbnail);
-            Image::make($file)->fit(300)->save($path_medium);
-            Image::make($file)->save($path_original);
-            $photo = LocatePhoto::create(['path' => $file_name,'location_id'=>$id]);
+            Image::make($_FILES['photo']['tmp_name'][$i])->fit(150)->save($path_thumbnail);
+           Image::make($_FILES['photo']['tmp_name'][$i])->fit(300)->save($path_medium);
+           Image::make($_FILES['photo']['tmp_name'][$i])->save($path_original);
+             LocatePhoto::create(['path' => $file_name,'location_id'=>$id]);
         }
     }
     public function searchLocationMap($input)

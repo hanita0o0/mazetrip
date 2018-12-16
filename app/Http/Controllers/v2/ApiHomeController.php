@@ -22,6 +22,8 @@ class ApiHomeController extends Controller
      */
     public function addLocation(Request $request)
     {
+
+
       if(! ($request->latitude and $request->longitude and $request->about and
       $request->photo and  $request->writer and $request->location and $request->address)){
          return "not enough inputs";
